@@ -51,33 +51,30 @@ energy_trends <- elec_consumption |>
     year = lubridate::year(ref_month),
     across(c(elec_twh, gas_gwh), as.numeric)
   ) |>
+  tidyr::pivot_longer(cols = c(elec_twh, gas_gwh), names_to = "fuel", 
+                      values_to = "consumption") |>
+  dplyr::mutate(fuel = if_else(fuel == "elec_twh", "electricity", "gas")) |>
   dplyr::filter(year >= 2010 & year < 2022) |>
-  dplyr::group_by(year) |>
+  dplyr::group_by(fuel, year) |>
   dplyr::mutate(
     # calculate relative trend
-    electricity_trend = elec_twh / max(elec_twh),
-    gas_trend = gas_gwh / max(gas_gwh)
+    relative_value = consumption / max(consumption)
   ) |>
   dplyr::ungroup()
 
 # generate monthly average for each fuel
 energy_trend_summary <- energy_trends |>
-  dplyr::select(month, electricity_trend, gas_trend) |>
-  tidyr::pivot_longer(cols = -month, names_to = "fuel") |>
+  dplyr::select(month, fuel, relative_value) |>
   dplyr::group_by(fuel, month) |>
-  dplyr::summarise(value = mean(value), .groups = "drop_last") |>
+  dplyr::summarise(value = mean(relative_value), .groups = "drop_last") |>
   dplyr::mutate(
-    fuel = stringr::str_remove_all(fuel, "_trend"),
     value = value/max(value),   # normalise average
     prop = value/sum(value)     # calculate month's contribution to annual total
   )
 
 # dataset for graphing
 energy_trends_gdt <- energy_trends |>
-  dplyr::select(ref_month, year, month, electricity_trend, gas_trend) |>
-  tidyr::pivot_longer(cols = c(electricity_trend, gas_trend), 
-                      names_to = "fuel") |>
-  dplyr::mutate(fuel = stringr::str_remove_all(fuel, "_trend"))
+  dplyr::select(ref_month, year, month, fuel, value = relative_value)
 
 energy_colours <- c(
   "electricity" = "#E8C027",
@@ -132,9 +129,9 @@ write_csv(energy_trends_gdt, "data/energy_trends.csv")
 #   - Ofgem price cap methodology assumes 3,100 kWh electricity & 12,000 kWh gas
 cap_estimates <- tibble::tibble(
   month = c(10:12, 1:3, 4:6, 7:9),
-  cap = c(rep(0, 3), rep(5387, 3), rep(6616, 3), rep(5897, 3)),
-  electricity = 0.487 * cap / 3100,
-  gas = 0.513 * cap / 12000
+  cap_forecast = c(rep(NA_real_, 3), rep(5387, 3), rep(6616, 3), rep(5897, 3)),
+  electricity = 0.487 * cap_forecast / 3100,
+  gas = 0.513 * cap_forecast / 12000
 ) |>
   mutate(
     electricity = if_else(month %in% 10:12, 1778 / 3100, electricity),
@@ -143,9 +140,9 @@ cap_estimates <- tibble::tibble(
 
 # simulate costs for coming year
 cost_simulator <- tibble::tibble(
-  # set-up simulator for Oct to 
+  # set-up simulator for Oct 2022 to September 2023
   year = rep(c(rep(2022, 3), rep(2023, 9)), 2),
-  month = rep(c(10:12, 1:3, 4:6, 7:9), 2),
+  month = rep(c(10:12, 1:9), 2),
   fuel = sort(rep(c("electricity", "gas"), 12))
 ) |>
   dplyr::left_join(
@@ -155,7 +152,7 @@ cost_simulator <- tibble::tibble(
   dplyr::left_join(
     # merge kwh cost estimates
     cap_estimates |> 
-      dplyr::select(-cap) |> 
+      dplyr::select(-cap_forecast) |> 
       tidyr::pivot_longer(cols = -month, names_to = "fuel", 
                           values_to = "cap"),
     by = c("month", "fuel")
@@ -182,18 +179,18 @@ cost_simulator <- tibble::tibble(
 
 # get my estimate costs
 month_totals <- cost_simulator |>
-  dplyr::select(ref_month, fuel, my_cost) |>
-  tidyr::pivot_wider(names_from = fuel, values_from = my_cost) |>
+  dplyr::select(ref_month, fuel, default_cost) |>
+  tidyr::pivot_wider(names_from = fuel, values_from = default_cost) |>
   dplyr::mutate(
     total = electricity + gas
   )
 
 # plot costs
-my_costs_plot <- ggplot(cost_simulator, aes(x = ref_month, y = my_cost, fill = fuel)) +
+default_costs_plot <- ggplot(cost_simulator, aes(x = ref_month, y = default_cost, fill = fuel)) +
   geom_col() +
   geom_text(
-    mapping = aes(y = my_cost, colour = fuel,
-                  label = scales::dollar(my_cost, prefix = "£", accuracy = 1)),
+    mapping = aes(y = default_cost, colour = fuel,
+                  label = scales::dollar(default_cost, prefix = "£", accuracy = 1)),
     position = position_stack(vjust = 0.05),
     size = 3,
     angle = 90,
@@ -218,20 +215,20 @@ my_costs_plot <- ggplot(cost_simulator, aes(x = ref_month, y = my_cost, fill = f
   geom_vline(xintercept = as.Date("2022-12-16"), colour = "grey40", 
              linetype = "dashed") +
   annotate(
-    geom = "text", x = as.Date("2022-12-12"), y = 545, 
+    geom = "text", x = as.Date("2022-12-12"), y = 725, 
     label = "Ofgem cap ︎◀︎", size = 3,
     family = "Hack", colour = "grey40", hjust = 1
   ) +
   annotate(
-    geom = "text", x = as.Date("2022-12-20"), y = 545, 
-    label = "▶︎ Cornwall Insight forecast", size = 3,
+    geom = "text", x = as.Date("2022-12-20"), y = 725, 
+    label = "▶︎ Cornwall Insight cap forecast", size = 3,
     family = "Hack", colour = "grey40", hjust = 0
   ) +
-  scale_y_continuous(limits = c(0, 545), breaks = seq(0, 450, 50)) +
+  scale_y_continuous(limits = c(0, 725), breaks = seq(0, 650, 50)) +
   scale_x_date(date_labels = "%b-%y", date_breaks = "1 month", 
                expand = expansion()) +
-  scale_fill_manual(values = energy_colours, labels = c("Electricity", "Gas")) +
-  scale_colour_manual(values = c("electricity" = "grey50", "gas" = "grey90")) +
+  scale_fill_manual(values = energy_colours, labels = c("Gas", "Electricity")) +
+  scale_colour_manual(values = c("gas" = "grey90", "electricity" = "grey50")) +
   labs(
     title = "Forecast monthly energy costs",
     x = "Month",
@@ -251,3 +248,15 @@ simulator_out <- cost_simulator |>
   select(-my_usage, -my_cost)
 
 write_csv(simulator_out, "data/cost_simulator.csv")
+
+
+flat_assumption <- cap_estimates |>
+  mutate(
+    default_elec = electricity * 3100/12,
+    default_gas = gas * 12000/12,
+    default_total = default_elec + default_gas,
+    my_elec = electricity * 2200/12,
+    my_gas = gas * 8200/12,
+    my_total = my_elec + my_gas
+  ) |>
+  select(month, starts_with("default"), starts_with("my"))
