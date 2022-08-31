@@ -110,8 +110,8 @@ write_csv(energy_trends_gdt, "data/energy_trends.csv")
 # 
 # use Ofgem default tarrif cap model for October to December
 # https://www.ofgem.gov.uk/publications/default-tariff-cap-level-1-october-2022-31-december-2022
-#   - gas: £1,875 (incl VAT)
-#   - electricity: £1,778 (incl VAT)
+#   - gas: £1,875 (incl VAT) + £104 standing charge
+#   - electricity: £1,778 (incl VAT) + £169 standing charge
 
 # Cornwall Insight figures quoted in The Guardian
 # https://www.theguardian.com/money/2022/aug/26/ofgem-raises-energy-price-cap-to-3549
@@ -134,8 +134,8 @@ cap_estimates <- tibble::tibble(
   gas = 0.513 * cap_forecast / 12000
 ) |>
   mutate(
-    electricity = if_else(month %in% 10:12, 1778 / 3100, electricity),
-    gas = if_else(month %in% 10:12, 1875 / 12000, gas)
+    electricity = if_else(month %in% 10:12, (1778 + 169) / 3100, electricity),
+    gas = if_else(month %in% 10:12, (1875 + 104) / 12000, gas)
   )
 
 # simulate costs for coming year
