@@ -466,16 +466,16 @@ Estimated cost is not actual cost
 </section>
 <section id="methodology" class="level2">
 <h2 class="anchored" data-anchor-id="methodology">Methodology</h2>
-<p>On Friday 26 August 2021 Ofgem, the UK energy regulator, <a href="https://www.theguardian.com/money/2022/aug/26/ofgem-raises-energy-price-cap-to-3549">announced a rise in the price cap</a> for domestic energy. On the same day, energy consultancy <a href="https://twitter.com/faisalislam/status/1563049747354910720">Cornwall Insight released updated forecasts</a> for the future values of Ofgem’s price cap in 2023. Reporting on the price has largely been focussed on the estimate of the annual cost for the “average” domestic customer, which for the new price cap is estimated as £3,549.</p>
-<p>While averages can be useful indicators they do not help customers understand their own situation. Similarly, the annual figure does not necessarily help customers understand their potential costs, especially as we head into the most energy intensive period of the year, and have significant increases forecast in the price cap going forward.</p>
+<p>On Friday 26 August 2021 Ofgem, the UK energy regulator, <a href="https://www.theguardian.com/money/2022/aug/26/ofgem-raises-energy-price-cap-to-3549">announced a rise</a> in the price cap for domestic energy. On the same day, energy consultancy <a href="https://www.cornwall-insight.com/press/cornwall-insight-comments-on-the-announcement-of-the-october-price-cap/">Cornwall Insight released updated forecasts</a> for the future values of Ofgem’s price cap in 2023 showing massive increases in household bills.</p>
+<p>Reporting on the price cap has largely been focussed on the estimate of the annual cost for the “average” domestic customer, which for the new price cap is estimated as £3,549. While averages can be useful indicators they do not help customers understand their own situation. Similarly, the annual figure does not necessarily help customers understand their potential costs, especially as we head into the most energy intensive period of the year, and have significant increases forecast in the price cap going forward.</p>
 <p>This calculator provides a simple approach to estimate energy costs using Ofgem’s announced price cap for October 2022 to December 2022 and Cornwall Insight’s forecasts of changes to the price cap for January 2023 through to September 2023.</p>
 <section id="estimating-energy-usage" class="level3">
 <h3 class="anchored" data-anchor-id="estimating-energy-usage">Estimating energy usage</h3>
 <p>The calculator uses overall UK electricity consumption<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and gas supply<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> figures published by the Department for Business Energy and Industrial Strategy (BEIS) to estimate the pattern of energy usage throughout the year. This is done by calculating the relative energy use by fuel for each month of each calendar year from 2010 to 2021, see <a href="#fig-relative-usage">Figure&nbsp;3</a>.</p>
 <p>An average of these relative monthly consumption figures is then taken, to smooth out fluctuations in annual figures due to different weather patterns, and then converted to a proportion of annual energy consumption for each fuel. These proportions are then applied to the user provided annual electricity and gas consumption, to estimate usage by month.</p>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="280" data-source-offset="-34"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 279;"><span id="cb7-280"><a href="#cb7-280" aria-hidden="true" tabindex="-1"></a>energy_trends <span class="op">=</span> aq<span class="op">.</span><span class="fu">loadCSV</span>(<span class="st">"data/energy_trends.csv"</span>)</span>
-<span id="cb7-281"><a href="#cb7-281" aria-hidden="true" tabindex="-1"></a>months <span class="op">=</span> [<span class="st">"J"</span><span class="op">,</span> <span class="st">"F"</span><span class="op">,</span> <span class="st">"M"</span><span class="op">,</span> <span class="st">"A"</span><span class="op">,</span> <span class="st">"M"</span><span class="op">,</span> <span class="st">"J"</span><span class="op">,</span> <span class="st">"J"</span><span class="op">,</span> <span class="st">"A"</span><span class="op">,</span> <span class="st">"S"</span><span class="op">,</span> <span class="st">"O"</span><span class="op">,</span> <span class="st">"N"</span><span class="op">,</span> <span class="st">"D"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="281" data-source-offset="-34"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 280;"><span id="cb7-281"><a href="#cb7-281" aria-hidden="true" tabindex="-1"></a>energy_trends <span class="op">=</span> aq<span class="op">.</span><span class="fu">loadCSV</span>(<span class="st">"data/energy_trends.csv"</span>)</span>
+<span id="cb7-282"><a href="#cb7-282" aria-hidden="true" tabindex="-1"></a>months <span class="op">=</span> [<span class="st">"J"</span><span class="op">,</span> <span class="st">"F"</span><span class="op">,</span> <span class="st">"M"</span><span class="op">,</span> <span class="st">"A"</span><span class="op">,</span> <span class="st">"M"</span><span class="op">,</span> <span class="st">"J"</span><span class="op">,</span> <span class="st">"J"</span><span class="op">,</span> <span class="st">"A"</span><span class="op">,</span> <span class="st">"S"</span><span class="op">,</span> <span class="st">"O"</span><span class="op">,</span> <span class="st">"N"</span><span class="op">,</span> <span class="st">"D"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display hidden">
 <div>
 <div id="ojs-cell-7-1" data-nodetype="declaration">
@@ -492,41 +492,41 @@ Estimated cost is not actual cost
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="289" data-source-offset="-89"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 288;"><span id="cb8-289"><a href="#cb8-289" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
-<span id="cb8-290"><a href="#cb8-290" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {</span>
-<span id="cb8-291"><a href="#cb8-291" aria-hidden="true" tabindex="-1"></a>    <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">1</span>]<span class="op">,</span></span>
-<span id="cb8-292"><a href="#cb8-292" aria-hidden="true" tabindex="-1"></a>    <span class="dt">label</span><span class="op">:</span> <span class="st">""</span><span class="op">,</span></span>
-<span id="cb8-293"><a href="#cb8-293" aria-hidden="true" tabindex="-1"></a>    <span class="dt">tickFormat</span><span class="op">:</span> <span class="st">"0%"</span></span>
-<span id="cb8-294"><a href="#cb8-294" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
-<span id="cb8-295"><a href="#cb8-295" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> {</span>
-<span id="cb8-296"><a href="#cb8-296" aria-hidden="true" tabindex="-1"></a>    <span class="dt">label</span><span class="op">:</span> <span class="st">""</span><span class="op">,</span></span>
-<span id="cb8-297"><a href="#cb8-297" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ticks</span><span class="op">:</span> <span class="dv">12</span><span class="op">,</span></span>
-<span id="cb8-298"><a href="#cb8-298" aria-hidden="true" tabindex="-1"></a>    <span class="dt">tickFormat</span><span class="op">:</span> d <span class="kw">=&gt;</span> months[d <span class="op">-</span> <span class="dv">1</span>]</span>
-<span id="cb8-299"><a href="#cb8-299" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
-<span id="cb8-300"><a href="#cb8-300" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marginBottom</span><span class="op">:</span> <span class="dv">50</span><span class="op">,</span></span>
-<span id="cb8-301"><a href="#cb8-301" aria-hidden="true" tabindex="-1"></a>  <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
-<span id="cb8-302"><a href="#cb8-302" aria-hidden="true" tabindex="-1"></a>  <span class="dt">facet</span><span class="op">:</span> {</span>
-<span id="cb8-303"><a href="#cb8-303" aria-hidden="true" tabindex="-1"></a>    <span class="dt">data</span><span class="op">:</span> energy_trends<span class="op">,</span></span>
-<span id="cb8-304"><a href="#cb8-304" aria-hidden="true" tabindex="-1"></a>    <span class="dt">x</span><span class="op">:</span> <span class="st">"fuel"</span><span class="op">,</span></span>
-<span id="cb8-305"><a href="#cb8-305" aria-hidden="true" tabindex="-1"></a>    <span class="dt">label</span><span class="op">:</span> <span class="st">""</span></span>
-<span id="cb8-306"><a href="#cb8-306" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
-<span id="cb8-307"><a href="#cb8-307" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
-<span id="cb8-308"><a href="#cb8-308" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(energy_trends<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"month"</span><span class="op">,</span> </span>
-<span id="cb8-309"><a href="#cb8-309" aria-hidden="true" tabindex="-1"></a>                                  <span class="dt">y</span><span class="op">:</span> <span class="st">"value"</span><span class="op">,</span></span>
-<span id="cb8-310"><a href="#cb8-310" aria-hidden="true" tabindex="-1"></a>                                  <span class="dt">stroke</span><span class="op">:</span><span class="st">"fuel"</span>})<span class="op">,</span></span>
-<span id="cb8-311"><a href="#cb8-311" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">lineY</span>(</span>
-<span id="cb8-312"><a href="#cb8-312" aria-hidden="true" tabindex="-1"></a>      energy_trends<span class="op">,</span></span>
-<span id="cb8-313"><a href="#cb8-313" aria-hidden="true" tabindex="-1"></a>        Plot<span class="op">.</span><span class="fu">groupX</span>({<span class="dt">y</span><span class="op">:</span> <span class="st">"mean"</span>}<span class="op">,</span> {<span class="dt">y</span><span class="op">:</span> <span class="st">"value"</span><span class="op">,</span> <span class="dt">x</span><span class="op">:</span> <span class="st">"month"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"fuel"</span><span class="op">,</span></span>
-<span id="cb8-314"><a href="#cb8-314" aria-hidden="true" tabindex="-1"></a>        <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">3</span><span class="op">,</span> <span class="dt">curve</span><span class="op">:</span> <span class="st">"basis"</span>})<span class="op">,</span></span>
-<span id="cb8-315"><a href="#cb8-315" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-316"><a href="#cb8-316" aria-hidden="true" tabindex="-1"></a>  ]<span class="op">,</span></span>
-<span id="cb8-317"><a href="#cb8-317" aria-hidden="true" tabindex="-1"></a>  <span class="dt">color</span><span class="op">:</span> {</span>
-<span id="cb8-318"><a href="#cb8-318" aria-hidden="true" tabindex="-1"></a>    <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
-<span id="cb8-319"><a href="#cb8-319" aria-hidden="true" tabindex="-1"></a>    <span class="dt">type</span><span class="op">:</span> <span class="st">"categorical"</span><span class="op">,</span></span>
-<span id="cb8-320"><a href="#cb8-320" aria-hidden="true" tabindex="-1"></a>    <span class="dt">domain</span><span class="op">:</span> [<span class="st">"electricity"</span><span class="op">,</span> <span class="st">"gas"</span>]<span class="op">,</span> </span>
-<span id="cb8-321"><a href="#cb8-321" aria-hidden="true" tabindex="-1"></a>    <span class="dt">range</span><span class="op">:</span> [<span class="st">"#E8C027"</span><span class="op">,</span> <span class="st">"#1092E8"</span>]</span>
-<span id="cb8-322"><a href="#cb8-322" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb8-323"><a href="#cb8-323" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="290" data-source-offset="-89"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 289;"><span id="cb8-290"><a href="#cb8-290" aria-hidden="true" tabindex="-1"></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb8-291"><a href="#cb8-291" aria-hidden="true" tabindex="-1"></a>  <span class="dt">y</span><span class="op">:</span> {</span>
+<span id="cb8-292"><a href="#cb8-292" aria-hidden="true" tabindex="-1"></a>    <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">1</span>]<span class="op">,</span></span>
+<span id="cb8-293"><a href="#cb8-293" aria-hidden="true" tabindex="-1"></a>    <span class="dt">label</span><span class="op">:</span> <span class="st">""</span><span class="op">,</span></span>
+<span id="cb8-294"><a href="#cb8-294" aria-hidden="true" tabindex="-1"></a>    <span class="dt">tickFormat</span><span class="op">:</span> <span class="st">"0%"</span></span>
+<span id="cb8-295"><a href="#cb8-295" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb8-296"><a href="#cb8-296" aria-hidden="true" tabindex="-1"></a>  <span class="dt">x</span><span class="op">:</span> {</span>
+<span id="cb8-297"><a href="#cb8-297" aria-hidden="true" tabindex="-1"></a>    <span class="dt">label</span><span class="op">:</span> <span class="st">""</span><span class="op">,</span></span>
+<span id="cb8-298"><a href="#cb8-298" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ticks</span><span class="op">:</span> <span class="dv">12</span><span class="op">,</span></span>
+<span id="cb8-299"><a href="#cb8-299" aria-hidden="true" tabindex="-1"></a>    <span class="dt">tickFormat</span><span class="op">:</span> d <span class="kw">=&gt;</span> months[d <span class="op">-</span> <span class="dv">1</span>]</span>
+<span id="cb8-300"><a href="#cb8-300" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb8-301"><a href="#cb8-301" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marginBottom</span><span class="op">:</span> <span class="dv">50</span><span class="op">,</span></span>
+<span id="cb8-302"><a href="#cb8-302" aria-hidden="true" tabindex="-1"></a>  <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb8-303"><a href="#cb8-303" aria-hidden="true" tabindex="-1"></a>  <span class="dt">facet</span><span class="op">:</span> {</span>
+<span id="cb8-304"><a href="#cb8-304" aria-hidden="true" tabindex="-1"></a>    <span class="dt">data</span><span class="op">:</span> energy_trends<span class="op">,</span></span>
+<span id="cb8-305"><a href="#cb8-305" aria-hidden="true" tabindex="-1"></a>    <span class="dt">x</span><span class="op">:</span> <span class="st">"fuel"</span><span class="op">,</span></span>
+<span id="cb8-306"><a href="#cb8-306" aria-hidden="true" tabindex="-1"></a>    <span class="dt">label</span><span class="op">:</span> <span class="st">""</span></span>
+<span id="cb8-307"><a href="#cb8-307" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb8-308"><a href="#cb8-308" aria-hidden="true" tabindex="-1"></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb8-309"><a href="#cb8-309" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">dot</span>(energy_trends<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"month"</span><span class="op">,</span> </span>
+<span id="cb8-310"><a href="#cb8-310" aria-hidden="true" tabindex="-1"></a>                                  <span class="dt">y</span><span class="op">:</span> <span class="st">"value"</span><span class="op">,</span></span>
+<span id="cb8-311"><a href="#cb8-311" aria-hidden="true" tabindex="-1"></a>                                  <span class="dt">stroke</span><span class="op">:</span><span class="st">"fuel"</span>})<span class="op">,</span></span>
+<span id="cb8-312"><a href="#cb8-312" aria-hidden="true" tabindex="-1"></a>    Plot<span class="op">.</span><span class="fu">lineY</span>(</span>
+<span id="cb8-313"><a href="#cb8-313" aria-hidden="true" tabindex="-1"></a>      energy_trends<span class="op">,</span></span>
+<span id="cb8-314"><a href="#cb8-314" aria-hidden="true" tabindex="-1"></a>        Plot<span class="op">.</span><span class="fu">groupX</span>({<span class="dt">y</span><span class="op">:</span> <span class="st">"mean"</span>}<span class="op">,</span> {<span class="dt">y</span><span class="op">:</span> <span class="st">"value"</span><span class="op">,</span> <span class="dt">x</span><span class="op">:</span> <span class="st">"month"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"fuel"</span><span class="op">,</span></span>
+<span id="cb8-315"><a href="#cb8-315" aria-hidden="true" tabindex="-1"></a>        <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">3</span><span class="op">,</span> <span class="dt">curve</span><span class="op">:</span> <span class="st">"basis"</span>})<span class="op">,</span></span>
+<span id="cb8-316"><a href="#cb8-316" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-317"><a href="#cb8-317" aria-hidden="true" tabindex="-1"></a>  ]<span class="op">,</span></span>
+<span id="cb8-318"><a href="#cb8-318" aria-hidden="true" tabindex="-1"></a>  <span class="dt">color</span><span class="op">:</span> {</span>
+<span id="cb8-319"><a href="#cb8-319" aria-hidden="true" tabindex="-1"></a>    <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb8-320"><a href="#cb8-320" aria-hidden="true" tabindex="-1"></a>    <span class="dt">type</span><span class="op">:</span> <span class="st">"categorical"</span><span class="op">,</span></span>
+<span id="cb8-321"><a href="#cb8-321" aria-hidden="true" tabindex="-1"></a>    <span class="dt">domain</span><span class="op">:</span> [<span class="st">"electricity"</span><span class="op">,</span> <span class="st">"gas"</span>]<span class="op">,</span> </span>
+<span id="cb8-322"><a href="#cb8-322" aria-hidden="true" tabindex="-1"></a>    <span class="dt">range</span><span class="op">:</span> [<span class="st">"#E8C027"</span><span class="op">,</span> <span class="st">"#1092E8"</span>]</span>
+<span id="cb8-323"><a href="#cb8-323" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-324"><a href="#cb8-324" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="fig-relative-usage" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 3: Relative energy monthly usage</figcaption><p></p>
@@ -583,7 +583,7 @@ Estimated cost is not actual cost
 </section>
 <section id="further-information" class="level3">
 <h3 class="anchored" data-anchor-id="further-information">Further information</h3>
-<p>The code for the this calculator is published on <a href="">Github</a> and a more detailed discussion of the methodology can be <a href="">read here</a>.</p>
+<p>The code for the this calculator is published on <a href="https://github.com/mattkerlogue/energy-cost-simulator">Github</a> and a more detailed discussion of the methodology can be <a href="https://lapsedgeographer.london/2022-08/energy-costs/">read here</a>.</p>
 </section>
 </section>
 
@@ -593,7 +593,7 @@ Estimated cost is not actual cost
 <ol>
 <li id="fn1" role="doc-endnote"><p>Electricity consumption figures are sourced from <a href="https://www.gov.uk/government/statistics/electricity-section-5-energy-trends">Energy Trends table 5.5</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2" role="doc-endnote"><p>Gas supply figures are sourced from <a href="https://www.gov.uk/government/statistics/gas-section-4-energy-trends">Energy Trends table 4.2</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3" role="doc-endnote"><p>Cornwall Insight figures quoted in <a href="https://www.theguardian.com/money/2022/aug/26/ofgem-raises-energy-price-cap-to-3549">The Guardian</a> and by <a href="https://twitter.com/faisalislam/status/1563049747354910720">Faisal Islam</a> on Twitter.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p><a href="https://www.cornwall-insight.com/press/cornwall-insight-comments-on-the-announcement-of-the-october-price-cap/">Cornwall Insight figures</a> quoted in <a href="https://www.theguardian.com/money/2022/aug/26/ofgem-raises-energy-price-cap-to-3549">The Guardian</a> and by <a href="https://twitter.com/faisalislam/status/1563049747354910720">Faisal Islam</a> on Twitter.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main>
 <!-- /main column -->

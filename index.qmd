@@ -242,18 +242,19 @@ Inputs.table(monthly_costs_out.objects(), {
 ## Methodology
 
 On Friday 26 August 2021 Ofgem, the UK energy regulator, 
-[announced a rise in the price cap](https://www.theguardian.com/money/2022/aug/26/ofgem-raises-energy-price-cap-to-3549) 
-for domestic energy. On the same day, energy consultancy
-[Cornwall Insight released updated forecasts](https://twitter.com/faisalislam/status/1563049747354910720) 
-for the future values of Ofgem's price cap in 2023. Reporting on the price has
-largely been focussed on the estimate of the annual cost for the "average"
-domestic customer, which for the new price cap is estimated as £3,549.
+[announced a rise](https://www.theguardian.com/money/2022/aug/26/ofgem-raises-energy-price-cap-to-3549) 
+in the price cap for domestic energy. On the same day, energy consultancy
+[Cornwall Insight released updated forecasts](https://www.cornwall-insight.com/press/cornwall-insight-comments-on-the-announcement-of-the-october-price-cap/) 
+for the future values of Ofgem's price cap in 2023 showing massive increases in
+household bills.
 
-While averages can be useful indicators they do not help customers understand
-their own situation. Similarly, the annual figure does not necessarily help
-customers understand their potential costs, especially as we head into the most 
-energy intensive period of the year, and have significant increases forecast in
-the price cap going forward.
+Reporting on the price cap has largely been focussed on the estimate of the 
+annual cost for the "average" domestic customer, which for the new price cap is 
+estimated as £3,549. While averages can be useful indicators they do not help
+customers understand their own situation. Similarly, the annual figure does not
+necessarily help customers understand their potential costs, especially as we
+head into the most energy intensive period of the year, and have significant
+increases forecast in the price cap going forward.
 
 This calculator provides a simple approach to estimate energy costs using Ofgem's
 announced price cap for October 2022 to December 2022 and Cornwall Insight's
@@ -400,12 +401,12 @@ possible to review the specific methodology/code driving other calculators.
 
 ### Further information
 
-The code for the this calculator is published on [Github]() and a more detailed
-discussion of the methodology can be [read here]().
+The code for the this calculator is published on [Github](https://github.com/mattkerlogue/energy-cost-simulator) and a more detailed
+discussion of the methodology can be [read here](https://lapsedgeographer.london/2022-08/energy-costs/).
 
 
 [^1]: Electricity consumption figures are sourced from [Energy Trends table 5.5](https://www.gov.uk/government/statistics/electricity-section-5-energy-trends)
 [^2]: Gas supply figures are sourced from [Energy Trends table 4.2](https://www.gov.uk/government/statistics/gas-section-4-energy-trends)
-[^3]: Cornwall Insight figures quoted in [The Guardian](https://www.theguardian.com/money/2022/aug/26/ofgem-raises-energy-price-cap-to-3549) 
+[^3]: [Cornwall Insight figures](https://www.cornwall-insight.com/press/cornwall-insight-comments-on-the-announcement-of-the-october-price-cap/) quoted in [The Guardian](https://www.theguardian.com/money/2022/aug/26/ofgem-raises-energy-price-cap-to-3549) 
 and by [Faisal Islam](https://twitter.com/faisalislam/status/1563049747354910720)
 on Twitter.
