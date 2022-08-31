@@ -1,0 +1,17 @@
+
+.observablehq {
+  width: 100%;
+}
+
+.observablehq table {
+  width: 100%;
+}
+
+.observablehq tr {
+  border-bottom: 1px solid var(--bs-gray-200);
+}
+
+.observablehq svg {
+  width: 100%;
+  min-width: 600px;
+}

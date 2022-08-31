@@ -1,0 +1,411 @@
+---
+title: "UK domestic energy costs calculator: Oct 2022 to Sept 2023"
+date: "2022-08-31"
+date-format: "DD MMMM YYYY"
+format: 
+  html: 
+    page-layout: article
+    cap-location: top
+    css: extra.css
+    callout-appearance: simple
+    toc: true
+theme: cosmo
+---
+
+The purpose of this webpage is to provide a simple calculation of likely monthly 
+energy costs for UK domestic energy customers from October 2022 to September
+2023 based on a given level of energy consumption using public domain information
+about future domestic energy prices.
+
+::: {.callout-note}
+
+#### Estimated cost is not actual cost
+
+This is an indicative simulation of potential energy costs; it is not designed
+or intended to accurately predict costs, see the [methodology](#methodolgy) for
+more details.
+
+:::
+
+## Your consumption
+
+Use the input/sliders below to provide your annual energy usage in
+kilowatt-hours (kWh), you can find this on the latest bill from your energy
+supplier. The defaults provided here represent the figures used in the Ofgem
+price cap methodology for the average household (3,100 kWh for electricity and
+12,000 kWh for gas).
+
+```{ojs}
+//| echo: false
+//| panel: input
+//| layout-ncol: 2
+
+viewof elec_usage = Inputs.range(
+  [0, 20000],
+  { label: "Annual electricity consumption (kWh):", value: 3100, step: 100}
+)
+
+viewof gas_usage = Inputs.range(
+  [0, 20000],
+  { label: "Annual gas consumption (kWh):", value: 12000, step: 100}
+)
+
+```
+
+## Your results
+
+```{ojs}
+//| echo: false
+//| output: false
+import { aq, op } from '@uwdata/arquero'
+
+d3 = require("d3@7")
+locale = d3.formatDefaultLocale({
+  "decimal": ".",
+  "thousands": ",",
+  "grouping": [3],
+  "currency": ["£", ""]
+})
+gbp_format = locale.format("$,.0f")
+month_format = d3.timeFormat("%b-%y")
+
+cost_simulator = aq.loadCSV("data/cost_simulator.csv")
+
+elec_cost = cost_simulator
+  .params({ usage: elec_usage })
+  .filter(d => d.fuel == "electricity")
+  .derive({ my_usage: aq.escape(d => d.prop * elec_usage )})
+  .derive({ my_cost : d => d.my_usage * d.cap})
+  
+gas_cost = cost_simulator
+  .filter(d => d.fuel == "gas")
+  .derive({ my_usage: aq.escape(d => d.prop * gas_usage )})
+  .derive({ my_cost : d => d.my_usage * d.cap})
+  
+my_cost_simulator = elec_cost
+  .concat(gas_cost)
+
+total_cost = aq.agg(my_cost_simulator, op.sum("my_cost"))
+
+monthly_costs = my_cost_simulator
+  .groupby("ref_month")
+  .rollup({ my_cost: d => op.sum(d.my_cost) })
+
+month_max = aq.agg(monthly_costs, op.max("my_cost"))
+
+```
+
+```{ojs}
+//| echo: false
+
+md`The estimated annual cost for energy based on the electricity and gas
+consumption supplied is: **${gbp_format(total_cost)}**. Below you can find 
+charts showing the estimated cost and usage, as well as a table of the results.`
+
+```
+
+:::{.panel-tabset}
+
+## Cost chart
+```{ojs}
+//| echo: false
+//| label: fig-cost-chart
+//| fig-cap: Estimated monthly energy costs
+//| fig-alt: >
+//|   A column chart showing estimated monthly energy costs associated
+//|   with the provided energy consumption. Each column is comprised of two
+//|   stacked columns: the lower stack, in yellow, denotes the cost estimated
+//|   for electricity; the upper stack, in blue, denotes the cost estimated
+//|   for gas. A label above the column shows the monthly total, i.e. the
+//|   combined cost of gas and electricity.
+Plot.plot({
+  y: {
+    domain: [0, month_max + 100], 
+    tickFormat: d => gbp_format(d),
+    label: "", 
+  },
+  x: {
+    tickRotate: -90,
+    tickFormat: "%b-%y",
+    label: ""
+  },
+  marginBottom: 50,
+  grid: true,
+  marks: [
+    Plot.barY(my_cost_simulator, {x: "ref_month", 
+                                  y: "my_cost",
+                                  fill:"fuel"}),
+    Plot.text(monthly_costs, {x: "ref_month",
+                                  y: "my_cost",
+                                  text: d => gbp_format(d.my_cost),
+                                  dy: -10,
+                                  fontWeight: "bold"})
+  ],
+  color: {
+    legend: true,
+    type: "categorical",
+    domain: ["electricity", "gas"], 
+    range: ["#E8C027", "#1092E8"]
+  }
+})
+```
+
+## Usage chart
+```{ojs}
+//| echo: false
+//| label: fig-usage-chart
+//| fig-cap: Estimated monthly energy costs
+//| fig-alt: >
+//|   A column chart showing estimated monthly energy costs associated
+//|   with the provided energy consumption. Each column is comprised of two
+//|   stacked columns: the lower stack, in yellow, denotes the cost estimated
+//|   for electricity; the upper stack, in blue, denotes the cost estimated
+//|   for gas. A label above the column shows the monthly total, i.e. the
+//|   combined cost of gas and electricity.
+Plot.plot({
+  y: { 
+    tickFormat: d => d.toFixed(0),
+    label: "", 
+  },
+  x: {
+    tickRotate: -90,
+    tickFormat: "%b-%y",
+    label: ""
+  },
+  facet: {
+    data: my_cost_simulator,
+    x: "fuel",
+    label: ""
+  },
+  marginBottom: 50,
+  grid: true,
+  marks: [
+    Plot.barY(my_cost_simulator, {x: "ref_month", 
+                                  y: "my_usage",
+                                  fill:"fuel"}),
+    Plot.text(my_cost_simulator, {x: "ref_month",
+                                  y: "my_usage",
+                                  text: d => d.my_usage.toFixed(0),
+                                  dy: -10,
+                                  fontWeight: "bold"})
+  ],
+  color: {
+    legend: true,
+    type: "categorical",
+    domain: ["electricity", "gas"], 
+    range: ["#E8C027", "#1092E8"]
+  }
+})
+```
+
+## Table
+```{ojs}
+//| echo: false
+//| tbl-cap: Estimated monthly energy costs
+
+monthly_costs_out = elec_cost
+  .select("ref_month", "my_usage", "my_cost")
+  .rename({ my_usage: "elec_usage", my_cost: "elec_cost" })
+  .join_full(
+    gas_cost
+      .select("ref_month", "my_usage", "my_cost")
+      .rename({ my_usage: "gas_usage", my_cost: "gas_cost" }),
+    "ref_month"
+  )
+  .derive({ total_cost: d => d.elec_cost + d.gas_cost })
+  .select("ref_month", "elec_usage", "gas_usage", "elec_cost", "gas_cost", "total_cost")
+  .rename({
+    ref_month: "Month", 
+    elec_usage: "Electricity (kWh)", 
+    gas_usage: "Gas (kWh)",
+    elec_cost: "Electricity (£)", 
+    gas_cost: "Gas (£)", 
+    total_cost: "Total cost (£)"
+  })
+
+Inputs.table(monthly_costs_out.objects(), {
+  format: {
+    "Month": x => month_format(x),
+    "Electricity (kWh)": x => x.toFixed(0) + " kWh", 
+    "Gas (kWh)": x => x.toFixed(0) + " kWh",
+    "Electricity (£)": x => gbp_format(x), 
+    "Gas (£)": x => gbp_format(x), 
+    "Total cost (£)": x => gbp_format(x)
+  },
+  rows: 20,
+  layout: "auto"
+})
+
+```
+:::
+
+## Methodology
+
+On Friday 26 August 2021 Ofgem, the UK energy regulator, 
+[announced a rise in the price cap](https://www.theguardian.com/money/2022/aug/26/ofgem-raises-energy-price-cap-to-3549) 
+for domestic energy. On the same day, energy consultancy
+[Cornwall Insight released updated forecasts](https://twitter.com/faisalislam/status/1563049747354910720) 
+for the future values of Ofgem's price cap in 2023. Reporting on the price has
+largely been focussed on the estimate of the annual cost for the "average"
+domestic customer, which for the new price cap is estimated as £3,549.
+
+While averages can be useful indicators they do not help customers understand
+their own situation. Similarly, the annual figure does not necessarily help
+customers understand their potential costs, especially as we head into the most 
+energy intensive period of the year, and have significant increases forecast in
+the price cap going forward.
+
+This calculator provides a simple approach to estimate energy costs using Ofgem's
+announced price cap for October 2022 to December 2022 and Cornwall Insight's
+forecasts of changes to the price cap for January 2023 through to September 2023.
+
+### Estimating energy usage
+The calculator uses overall UK electricity consumption[^1] and gas supply[^2]
+figures published by the Department for Business Energy and Industrial Strategy
+(BEIS) to estimate the pattern of energy usage throughout the year. This is done
+by calculating the relative energy use by fuel for each month of each calendar
+year from 2010 to 2021, see @fig-relative-usage.
+
+An average of these relative monthly consumption figures
+is then taken, to smooth out fluctuations in annual figures due to different
+weather patterns, and then converted to a proportion of annual energy consumption
+for each fuel. These proportions are then applied to the user provided annual
+electricity and gas consumption, to estimate usage by month.
+
+```{ojs}
+//| echo: false
+//| output: false
+energy_trends = aq.loadCSV("data/energy_trends.csv")
+months = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
+```
+
+```{ojs}
+//| echo: false
+//| label: fig-relative-usage
+//| fig-cap: Relative energy monthly usage
+Plot.plot({
+  y: {
+    domain: [0, 1],
+    label: "",
+    tickFormat: "0%"
+  },
+  x: {
+    label: "",
+    ticks: 12,
+    tickFormat: d => months[d - 1]
+  },
+  marginBottom: 50,
+  grid: true,
+  facet: {
+    data: energy_trends,
+    x: "fuel",
+    label: ""
+  },
+  marks: [
+    Plot.dot(energy_trends, {x: "month", 
+                                  y: "value",
+                                  stroke:"fuel"}),
+    Plot.lineY(
+      energy_trends,
+        Plot.groupX({y: "mean"}, {y: "value", x: "month", stroke: "fuel",
+        strokeWidth: 3, curve: "basis"}),
+    )
+  ],
+  color: {
+    legend: true,
+    type: "categorical",
+    domain: ["electricity", "gas"], 
+    range: ["#E8C027", "#1092E8"]
+  }
+})
+```
+
+::: {.callout-important}
+
+#### Estimated usage is not actual usage
+
+Even though you can provide your own annual energy consumption the monthly
+estimates are unlikely to accurately predict how your energy consumption varies
+over the year. The underlying statistics are for total UK energy usage, so
+including both industrial, commercial and domestic uses.
+
+Your energy use will also vary by the size of your household as well as the
+size, age and construction of your property.
+
+:::
+
+### Estimating energy costs
+There are two sources for future energy costs: (i) Ofgem's announced price cap
+for October 2022 to December 2022, and (ii) Cornwall Insight's forecast of the
+future value of the price cap that will apply from January 2023 to September
+2023.
+
+Ofgem's methodology for calculating the energy price cap is very complicated,
+and the price cap that applies to your energy bill will vary depending on the
+region of the UK you live in as well as how you pay for your electricity. This
+calculator uses the GB average figures provided in the Ofgem pricing model
+spreadsheet for the "Other methods" payment method (e.g. direct debit payment),
+specifically £1,693.02 for electricity and £1,785.66 for gas.
+
+Cornwall Insight have published regular forecasts for the price cap for dual-fuel
+direct debit customers in recent months, the latest[^3] being released the same
+day as the Ofgem price cap rise was announced. Their latest forecast is of a
+price cap of £5,387 for January 2023 to March 2023, £6,616 for April 2023 to
+June 2023, and £5,897 for July 2023 to September 2023.
+
+The Cornwall Insight figures are translated into separate figures for gas and
+electricity by using the fuel mix implied by the methodology of the Ofgem model
+spreadsheet's indicative dual-fuel cost, that is 51.3% gas and 48.7% electricity.
+
+The values of the cap for gas and electricity are then converted into implied 
+per kWh costs using the Ofgem model annual consumption assumption of 3,100 kWh
+for electricity and 12,000 kWh for gas.
+
+These unit costs are then applied to the estimated usage to generate monthly
+costs per fuel, which are then aggregated to calculate the monthly and annual
+total cost.
+
+::: {.callout-important}
+
+#### Estimated cost is not actual cost
+
+The specific level of the price cap that applies to you depends on where you
+live and your payment method. The price cap is a cap on the unit price of energy,
+it is not a cap on the maximum amount you will pay, the more energy you use the
+more you will pay.
+
+The price cap figures used are GB average figures, each energy supply region
+has its own cap. Based on figures in the published Ofgem model, if you pay via
+prepayment meter your costs could be around 2% higher, if you pay on receipt of
+a bill from your provide your costs could be around 6% higher.
+
+Energy companies are still studying the price cap announcement and it is unclear
+what specific prices they will charge their customers.
+
+This calculator does not take account of any of the government's support
+measures for energy bill support or the cost of living.
+
+The Cornwall Insight forecasts of the price are not guaranteed, they are
+estimates based on forecasts of future wholesale energy costs and other inputs
+to the Ofgem price cap modelling. These forecasts may rise further if wholesale
+energy prices continue to rise, or they may reduce if future wholesale energy
+prices do not rise as high as forecast.
+
+:::
+
+### Why are your figures different from X, Y, Z
+Largely it will be a difference of methodology. The sections above explain the
+steps taken to build the calculator and the code is open source. It has not been
+possible to review the specific methodology/code driving other calculators.
+
+### Further information
+
+The code for the this calculator is published on [Github]() and a more detailed
+discussion of the methodology can be [read here]().
+
+
+[^1]: Electricity consumption figures are sourced from [Energy Trends table 5.5](https://www.gov.uk/government/statistics/electricity-section-5-energy-trends)
+[^2]: Gas supply figures are sourced from [Energy Trends table 4.2](https://www.gov.uk/government/statistics/gas-section-4-energy-trends)
+[^3]: Cornwall Insight figures quoted in [The Guardian](https://www.theguardian.com/money/2022/aug/26/ofgem-raises-energy-price-cap-to-3549) 
+and by [Faisal Islam](https://twitter.com/faisalislam/status/1563049747354910720)
+on Twitter.
